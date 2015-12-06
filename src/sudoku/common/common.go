@@ -1,7 +1,7 @@
 package common
 
 
-const EMPTY_FIELD = 0 // TODO: are we using this?
+const EmptyField = 0 // TODO: are we using this?
 
 /*
   represent the general n-doku puzzle state
@@ -45,31 +45,31 @@ func MakeNdoku(values [][]int, size uint8) (*Ndoku, bool) {
 	return &Ndoku{size, valuesCopy}, true
 }
 
-func validate(ndoku *Ndoku, startRow int, startCol int, next func (row int, col int, size uint8) (int, int, bool)) (isValid, ok bool) {
+func validate(ndoku *Ndoku, startRow int, startCol int, next func (row int, col int, size uint8) (int, int, bool)) bool {
 	seen := make(map[int]bool)
 	dim := int(ndoku.Size)*int(ndoku.Size)
 	done := false
 
 	for row, col := startRow, startCol; !done; row, col, done = next(row, col, ndoku.Size) {
 		if row < 0 || row >= dim || col < 0 || col >= dim {
-			return false, false
+			return false
 		}
 
 		value := ndoku.Values[row][col]
-		if value != EMPTY_FIELD {
+		if value != EmptyField {
 			if value < 1 || value > dim {
-				return false, false
+				return false
 			}
 			if seen[value] {
-				return false, true
+				return false
 			}
 			seen[value] = true
 		}
 	}
-	return true, true
+	return true
 }
 
-func IsValidRow(ndoku *Ndoku, row int) (bool, bool) {
+func IsValidRow(ndoku *Ndoku, row int) bool {
 	return validate(ndoku, row, 0, func (r int, c int, s uint8) (int, int, bool) {
 		if c+1 >= int(s)*int(s) {
 			return 0, 0, true
@@ -78,7 +78,7 @@ func IsValidRow(ndoku *Ndoku, row int) (bool, bool) {
 	})
 }
 
-func IsValidColumn(ndoku *Ndoku, col int) (bool, bool) {
+func IsValidColumn(ndoku *Ndoku, col int) bool {
 	return validate(ndoku, 0, col, func (r int, c int, s uint8) (int, int, bool) {
 		if r+1 >= int(s)*int(s) {
 			return 0, 0, true
@@ -87,16 +87,15 @@ func IsValidColumn(ndoku *Ndoku, col int) (bool, bool) {
 	})
 }
 
-func IsValidBlock(ndoku *Ndoku, row int, col int) (bool, bool) {
+func IsValidBlock(ndoku *Ndoku, row int, col int) bool {
 	startRow := row / int(ndoku.Size)
 	startCol := col / int(ndoku.Size)
 
 	return validate(ndoku, startRow, startCol, func (r int, c int, s uint8) (int, int, bool) {
-		// TODO: only cast to int() once here
 		size := int(s)
 		newColumn, newRow := (c+1)/size, (r+1)/size
 
-		if newRow > r/size && (c+1)/size > c/size {
+		if newRow > r/size && newColumn > c/size {
 			return 0, 0, true
 		}
 
@@ -106,4 +105,31 @@ func IsValidBlock(ndoku *Ndoku, row int, col int) (bool, bool) {
 			return r+1, 0, false
 		}
 	})
+}
+
+func IsValid(ndoku *Ndoku) bool {
+	// TODO: add method to Ndoku to compute the dim
+	dim := int(ndoku.Size) * int(ndoku.Size)
+
+	for d := 0; d < dim; d++ {
+		ok := IsValidRow(ndoku, d)
+		if !ok {
+			return false
+		}
+
+		ok = IsValidColumn(ndoku, d)
+		if !ok {
+			return false
+		}
+	}
+
+	for br := 0; br < int(ndoku.Size); br++ {
+		for bc := 0; bc < int(ndoku.Size); bc++ {
+			ok := IsValidBlock(ndoku, br * int(ndoku.Size), bc * int(ndoku.Size))
+			if !ok {
+				return false
+			}
+		}
+	}
+	return true
 }

@@ -18,7 +18,7 @@ func solveDFS(ndoku *common.Ndoku, curFieldNum int) bool {
 	curFieldRow, curFieldCol := curFieldNum / dim, curFieldNum % dim
 
 	// if the field is already filled, move on to the next field
-	if ndoku.Values[curFieldRow][curFieldCol] != 0 {
+	if ndoku.Values[curFieldRow][curFieldCol] != common.EmptyField {
 		return solveDFS(ndoku, curFieldNum+1)
 	}
 
@@ -26,38 +26,32 @@ func solveDFS(ndoku *common.Ndoku, curFieldNum int) bool {
 	for f := 1; f <= dim; f++ {
 		ndoku.Values[curFieldRow][curFieldCol] = f
 
-		// validate row
-		res, ok := common.IsValidRow(ndoku, curFieldRow)
-		if !res || !ok {
-			ndoku.Values[curFieldRow][curFieldCol] = 0
+		// validate row, column, and block
+		ok := common.IsValidRow(ndoku, curFieldRow)
+		ok = ok && common.IsValidColumn(ndoku, curFieldCol)
+		ok = ok && common.IsValidBlock(ndoku, curFieldRow, curFieldCol)
+
+		if !ok {
+			ndoku.Values[curFieldRow][curFieldCol] = common.EmptyField
 			continue
 		}
 
-		// validate column
-		res, ok = common.IsValidColumn(ndoku, curFieldCol)
-		if !res || !ok {
-			ndoku.Values[curFieldRow][curFieldCol] = 0
-			continue
-		}
-
-		// validate block
-		res, ok = common.IsValidBlock(ndoku, curFieldRow, curFieldCol)
-		if !res || !ok {
-			ndoku.Values[curFieldRow][curFieldCol] = 0
-			continue
-		}
-
-		res = solveDFS(ndoku, curFieldNum+1)
-		if res {
+		ok = solveDFS(ndoku, curFieldNum+1)
+		if ok {
 			return true
 		}
 	}
 
-	ndoku.Values[curFieldRow][curFieldCol] = 0
+	ndoku.Values[curFieldRow][curFieldCol] = common.EmptyField
 	return false
 }
 
-// TODO: check the input to see if it's valid to begin with
 func SolveDFS(ndoku *common.Ndoku) bool {
+	ok := common.IsValid(ndoku)
+
+	if !ok {
+		return false
+	}
+
 	return solveDFS(ndoku, 0)
 }

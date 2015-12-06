@@ -44,10 +44,9 @@ func main() {
 	if res {
 		fmt.Println()
 		fmt.Println("solved:")
-		printNdoku(ndoku)
 	} else {
 		fmt.Println("could not solve: ")
-		printNdoku(ndoku)
 	}
 
+	printNdoku(ndoku)
 }
