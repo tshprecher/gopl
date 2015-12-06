@@ -1,22 +1,22 @@
 package common
 
 
-const EmptyField = 0 // TODO: are we using this?
+const EmptyField = 0
 
 /*
-  represent the general n-doku puzzle state
+  represent the general sudoku puzzle state
   where size == 3 => standard sudoku 9x9.
  */
-type Ndoku struct{
+type Sudoku struct{
 	Size uint8
 	Values [][]int
 }
 
-func MakeSudoku(values [][]int) (*Ndoku, bool) {
-	return MakeNdoku(values, 3)
+func MakeStandardSudoku(values [][]int) (*Sudoku, bool) {
+	return MakeSudoku(values, 3)
 }
 
-func MakeNdoku(values [][]int, size uint8) (*Ndoku, bool) {
+func MakeSudoku(values [][]int, size uint8) (*Sudoku, bool) {
 	dim := int(size) * int(size)
 
 	// verify dimensions of input and range of the values
@@ -42,20 +42,20 @@ func MakeNdoku(values [][]int, size uint8) (*Ndoku, bool) {
 		copy(rowCopy, row)
 		valuesCopy[r] = rowCopy
 	}
-	return &Ndoku{size, valuesCopy}, true
+	return &Sudoku{size, valuesCopy}, true
 }
 
-func validate(ndoku *Ndoku, startRow int, startCol int, next func (row int, col int, size uint8) (int, int, bool)) bool {
+func validate(sudoku *Sudoku, startRow int, startCol int, next func (row int, col int, size uint8) (int, int, bool)) bool {
 	seen := make(map[int]bool)
-	dim := int(ndoku.Size)*int(ndoku.Size)
+	dim := int(sudoku.Size)*int(sudoku.Size)
 	done := false
 
-	for row, col := startRow, startCol; !done; row, col, done = next(row, col, ndoku.Size) {
+	for row, col := startRow, startCol; !done; row, col, done = next(row, col, sudoku.Size) {
 		if row < 0 || row >= dim || col < 0 || col >= dim {
 			return false
 		}
 
-		value := ndoku.Values[row][col]
+		value := sudoku.Values[row][col]
 		if value != EmptyField {
 			if value < 1 || value > dim {
 				return false
@@ -69,8 +69,8 @@ func validate(ndoku *Ndoku, startRow int, startCol int, next func (row int, col 
 	return true
 }
 
-func IsValidRow(ndoku *Ndoku, row int) bool {
-	return validate(ndoku, row, 0, func (r int, c int, s uint8) (int, int, bool) {
+func IsValidRow(sudoku *Sudoku, row int) bool {
+	return validate(sudoku, row, 0, func (r int, c int, s uint8) (int, int, bool) {
 		if c+1 >= int(s)*int(s) {
 			return 0, 0, true
 		}
@@ -78,8 +78,8 @@ func IsValidRow(ndoku *Ndoku, row int) bool {
 	})
 }
 
-func IsValidColumn(ndoku *Ndoku, col int) bool {
-	return validate(ndoku, 0, col, func (r int, c int, s uint8) (int, int, bool) {
+func IsValidColumn(sudoku *Sudoku, col int) bool {
+	return validate(sudoku, 0, col, func (r int, c int, s uint8) (int, int, bool) {
 		if r+1 >= int(s)*int(s) {
 			return 0, 0, true
 		}
@@ -87,11 +87,11 @@ func IsValidColumn(ndoku *Ndoku, col int) bool {
 	})
 }
 
-func IsValidBlock(ndoku *Ndoku, row int, col int) bool {
-	startRow := row / int(ndoku.Size)
-	startCol := col / int(ndoku.Size)
+func IsValidBlock(sudoku *Sudoku, row int, col int) bool {
+	startRow := row / int(sudoku.Size)
+	startCol := col / int(sudoku.Size)
 
-	return validate(ndoku, startRow, startCol, func (r int, c int, s uint8) (int, int, bool) {
+	return validate(sudoku, startRow, startCol, func (r int, c int, s uint8) (int, int, bool) {
 		size := int(s)
 		newColumn, newRow := (c+1)/size, (r+1)/size
 
@@ -107,25 +107,25 @@ func IsValidBlock(ndoku *Ndoku, row int, col int) bool {
 	})
 }
 
-func IsValid(ndoku *Ndoku) bool {
-	// TODO: add method to Ndoku to compute the dim
-	dim := int(ndoku.Size) * int(ndoku.Size)
+func IsValid(sudoku *Sudoku) bool {
+	// TODO: add method to Sudoku to compute the dim
+	dim := int(sudoku.Size) * int(sudoku.Size)
 
 	for d := 0; d < dim; d++ {
-		ok := IsValidRow(ndoku, d)
+		ok := IsValidRow(sudoku, d)
 		if !ok {
 			return false
 		}
 
-		ok = IsValidColumn(ndoku, d)
+		ok = IsValidColumn(sudoku, d)
 		if !ok {
 			return false
 		}
 	}
 
-	for br := 0; br < int(ndoku.Size); br++ {
-		for bc := 0; bc < int(ndoku.Size); bc++ {
-			ok := IsValidBlock(ndoku, br * int(ndoku.Size), bc * int(ndoku.Size))
+	for br := 0; br < int(sudoku.Size); br++ {
+		for bc := 0; bc < int(sudoku.Size); bc++ {
+			ok := IsValidBlock(sudoku, br * int(sudoku.Size), bc * int(sudoku.Size))
 			if !ok {
 				return false
 			}

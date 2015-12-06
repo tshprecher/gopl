@@ -7,8 +7,8 @@ import (
 	"sudoku/common"
 )
 
-func solveDFS(ndoku *common.Ndoku, curFieldNum int) bool {
-	dim := int(ndoku.Size) * int(ndoku.Size)
+func solveDFS(sudoku *common.Sudoku, curFieldNum int) bool {
+	dim := int(sudoku.Size) * int(sudoku.Size)
 
 	// no more fields to satisfy means problem is solved
 	if curFieldNum == dim * dim {
@@ -18,40 +18,40 @@ func solveDFS(ndoku *common.Ndoku, curFieldNum int) bool {
 	curFieldRow, curFieldCol := curFieldNum / dim, curFieldNum % dim
 
 	// if the field is already filled, move on to the next field
-	if ndoku.Values[curFieldRow][curFieldCol] != common.EmptyField {
-		return solveDFS(ndoku, curFieldNum+1)
+	if sudoku.Values[curFieldRow][curFieldCol] != common.EmptyField {
+		return solveDFS(sudoku, curFieldNum+1)
 	}
 
 	// satisfy recursively with all field values
 	for f := 1; f <= dim; f++ {
-		ndoku.Values[curFieldRow][curFieldCol] = f
+		sudoku.Values[curFieldRow][curFieldCol] = f
 
 		// validate row, column, and block
-		ok := common.IsValidRow(ndoku, curFieldRow)
-		ok = ok && common.IsValidColumn(ndoku, curFieldCol)
-		ok = ok && common.IsValidBlock(ndoku, curFieldRow, curFieldCol)
+		ok := common.IsValidRow(sudoku, curFieldRow)
+		ok = ok && common.IsValidColumn(sudoku, curFieldCol)
+		ok = ok && common.IsValidBlock(sudoku, curFieldRow, curFieldCol)
 
 		if !ok {
-			ndoku.Values[curFieldRow][curFieldCol] = common.EmptyField
+			sudoku.Values[curFieldRow][curFieldCol] = common.EmptyField
 			continue
 		}
 
-		ok = solveDFS(ndoku, curFieldNum+1)
+		ok = solveDFS(sudoku, curFieldNum+1)
 		if ok {
 			return true
 		}
 	}
 
-	ndoku.Values[curFieldRow][curFieldCol] = common.EmptyField
+	sudoku.Values[curFieldRow][curFieldCol] = common.EmptyField
 	return false
 }
 
-func SolveDFS(ndoku *common.Ndoku) bool {
-	ok := common.IsValid(ndoku)
+func SolveDFS(sudoku *common.Sudoku) bool {
+	ok := common.IsValid(sudoku)
 
 	if !ok {
 		return false
 	}
 
-	return solveDFS(ndoku, 0)
+	return solveDFS(sudoku, 0)
 }

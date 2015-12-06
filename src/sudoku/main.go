@@ -7,17 +7,17 @@ import (
 	"sudoku/compute"
 )
 
-func printNdoku(ndoku *common.Ndoku) {
-	var size int = int(ndoku.Size)
+func printSudoku(sudoku *common.Sudoku) {
+	var size int = int(sudoku.Size)
 	var dim = size * size
 
 	for r := 0; r < dim; r++ {
 		for c := 0; c < dim; c++ {
-			val := ndoku.Values[r][c]
+			val := sudoku.Values[r][c]
 			if val == 0 {
 				fmt.Printf(".")
 			} else {
-				fmt.Printf("%d", ndoku.Values[r][c])
+				fmt.Printf("%d", sudoku.Values[r][c])
 			}
 
 
@@ -30,16 +30,16 @@ func printNdoku(ndoku *common.Ndoku) {
 }
 
 func main() {
-	ndoku, _ := common.MakeSudoku(examples.Ex2)
-/*	ndoku.Values[0][0] = 0
-	ndoku.Values[0][5] = 0
-	ndoku.Values[5][5] = 0
-	ndoku.Values[8][8] = 0
+	sudoku, _ := common.MakeStandardSudoku(examples.Ex2)
+/*	sudoku.Values[0][0] = 0
+	sudoku.Values[0][5] = 0
+	sudoku.Values[5][5] = 0
+	sudoku.Values[8][8] = 0
 */
 
 	fmt.Println("solving the following problem:")
-	printNdoku(ndoku) // TODO: change ndoku everywhere to sudoku for less goofiness
-	res := compute.SolveDFS(ndoku)
+	printSudoku(sudoku)
+	res := compute.SolveDFS(sudoku)
 
 	if res {
 		fmt.Println()
@@ -48,5 +48,5 @@ func main() {
 		fmt.Println("could not solve: ")
 	}
 
-	printNdoku(ndoku)
+	printSudoku(sudoku)
 }
