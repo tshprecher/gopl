@@ -1,6 +1,7 @@
 package common
 
-const EMPTY_FIELD = 0
+
+const EMPTY_FIELD = 0 // TODO: are we using this?
 
 /*
   represent the general n-doku puzzle state
@@ -55,13 +56,15 @@ func validate(ndoku *Ndoku, startRow int, startCol int, next func (row int, col 
 		}
 
 		value := ndoku.Values[row][col]
-		if value < 1 || value > dim {
-			return false, false
+		if value != EMPTY_FIELD {
+			if value < 1 || value > dim {
+				return false, false
+			}
+			if seen[value] {
+				return false, true
+			}
+			seen[value] = true
 		}
-		if seen[value] {
-			return false, true
-		}
-		seen[value] = true
 	}
 	return true, true
 }
