@@ -30,12 +30,7 @@ func printSudoku(sudoku *common.Sudoku) {
 }
 
 func main() {
-	sudoku, _ := common.MakeStandardSudoku(examples.Ex2)
-/*	sudoku.Values[0][0] = 0
-	sudoku.Values[0][5] = 0
-	sudoku.Values[5][5] = 0
-	sudoku.Values[8][8] = 0
-*/
+	sudoku, _ := common.NewSudokuFromSlice(examples.Ex2, 3)
 
 	fmt.Println("solving the following problem:")
 	printSudoku(sudoku)

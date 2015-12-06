@@ -19,7 +19,7 @@ var sampleCompleted [][]int = [][]int{
 	{9, 1, 2, 3, 4, 5, 6, 7, 8}}
 
 func TestIsValidRow(t *testing.T) {
-	sudoku, _ := MakeSudoku(sampleCompleted)
+	sudoku, _ := NewSudokuFromSlice(sampleCompleted, 3)
 	var ok bool
 	var temp int
 
@@ -51,7 +51,7 @@ func TestIsValidRow(t *testing.T) {
 }
 
 func TestIsValidColumn(t *testing.T) {
-	sudoku, _ := MakeSudoku(sampleCompleted)
+	sudoku, _ := NewSudokuFromSlice(sampleCompleted, 3)
 	var ok bool
 	var temp int
 
@@ -83,7 +83,7 @@ func TestIsValidColumn(t *testing.T) {
 }
 
 func TestIsValidBlock(t *testing.T) {
-	sudoku, _ := MakeSudoku(sampleCompleted)
+	sudoku, _ := NewSudokuFromSlice(sampleCompleted, 3)
 	var ok bool
 	var temp int
 
@@ -117,7 +117,7 @@ func TestIsValidBlock(t *testing.T) {
 }
 
 func TestIsValid(t *testing.T) {
-	sudoku, _ := MakeSudoku(sampleCompleted)
+	sudoku, _ := NewSudokuFromSlice(sampleCompleted, 3)
 
 	ok := IsValid(sudoku)
 	if !ok {

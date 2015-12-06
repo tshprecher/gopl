@@ -12,11 +12,19 @@ type Sudoku struct{
 	Values [][]int
 }
 
-func MakeStandardSudoku(values [][]int) (*Sudoku, bool) {
-	return MakeSudoku(values, 3)
+func NewSudoku(size uint8) *Sudoku {
+	dim := int(size) * int(size)
+	values := make([][]int, dim)
+
+	for d := 0; d < dim; d++ {
+		values[d] = make([]int, dim)
+	}
+
+	return &Sudoku{size, values}
 }
 
-func MakeSudoku(values [][]int, size uint8) (*Sudoku, bool) {
+
+func NewSudokuFromSlice(values [][]int, size uint8) (*Sudoku, bool) {
 	dim := int(size) * int(size)
 
 	// verify dimensions of input and range of the values
