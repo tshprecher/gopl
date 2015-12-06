@@ -1,7 +1,4 @@
-// common logic
 package common
-
-import "fmt"
 
 const EMPTY_FIELD = 0
 
@@ -10,8 +7,8 @@ const EMPTY_FIELD = 0
   where size == 3 => standard sudoku 9x9.
  */
 type Ndoku struct{
-	size uint8
-	values [][]int
+	Size uint8
+	Values [][]int
 }
 
 func MakeSudoku(values [][]int) (*Ndoku, bool) {
@@ -19,17 +16,18 @@ func MakeSudoku(values [][]int) (*Ndoku, bool) {
 }
 
 func MakeNdoku(values [][]int, size uint8) (*Ndoku, bool) {
-	fmt.Println("making ndoku...")
+	dim := int(size) * int(size)
+
 	// verify dimensions of input and range of the values
-	if len(values) != int(size) {
+	if len(values) != dim {
 		return nil, false
 	}
 	for _, row := range(values) {
-		if len(row) != int(size) {
+		if len(row) != dim {
 			return nil, false
 		}
 		for _, v := range(row) {
-			if v < 0 || v > int(size)*int(size) {
+			if v < 0 || v > dim {
 				return nil, false
 			}
 
@@ -41,26 +39,22 @@ func MakeNdoku(values [][]int, size uint8) (*Ndoku, bool) {
 	for r, row := range(values) {
 		rowCopy := make([]int, len(row))
 		copy(rowCopy, row)
-		valuesCopy[r] = row
+		valuesCopy[r] = rowCopy
 	}
-
-	fmt.Println("made ndoku %v", &Ndoku{size, valuesCopy})
-
 	return &Ndoku{size, valuesCopy}, true
 }
 
 func validate(ndoku *Ndoku, startRow int, startCol int, next func (row int, col int, size uint8) (int, int, bool)) (isValid, ok bool) {
 	seen := make(map[int]bool)
-	dim := int(ndoku.size)*int(ndoku.size)
-	row, col, done := next(startRow, startCol, ndoku.size)
+	dim := int(ndoku.Size)*int(ndoku.Size)
+	done := false
 
-	for ; !done; row, col, done = next(row, col, ndoku.size) {
+	for row, col := startRow, startCol; !done; row, col, done = next(row, col, ndoku.Size) {
 		if row < 0 || row >= dim || col < 0 || col >= dim {
 			return false, false
 		}
 
-		value := ndoku.values[row][col]
-
+		value := ndoku.Values[row][col]
 		if value < 1 || value > dim {
 			return false, false
 		}
@@ -74,7 +68,7 @@ func validate(ndoku *Ndoku, startRow int, startCol int, next func (row int, col 
 
 func IsValidRow(ndoku *Ndoku, row int) (bool, bool) {
 	return validate(ndoku, row, 0, func (r int, c int, s uint8) (int, int, bool) {
-		if c >= int(s)*int(s) {
+		if c+1 >= int(s)*int(s) {
 			return 0, 0, true
 		}
 		return r, c+1, false
@@ -83,24 +77,30 @@ func IsValidRow(ndoku *Ndoku, row int) (bool, bool) {
 
 func IsValidColumn(ndoku *Ndoku, col int) (bool, bool) {
 	return validate(ndoku, 0, col, func (r int, c int, s uint8) (int, int, bool) {
-		if r >= int(s)*int(s) {
+		if r+1 >= int(s)*int(s) {
 			return 0, 0, true
 		}
 		return r+1, c, false
 	})
 }
 
-
 func IsValidBlock(ndoku *Ndoku, row int, col int) (bool, bool) {
-	startRow := row / int(ndoku.size)
-	startCol := col / int(ndoku.size)
-	count := 0
+	startRow := row / int(ndoku.Size)
+	startCol := col / int(ndoku.Size)
 
 	return validate(ndoku, startRow, startCol, func (r int, c int, s uint8) (int, int, bool) {
-		if count >= int(s)*int(s) {
+		// TODO: only cast to int() once here
+		size := int(s)
+		newColumn, newRow := (c+1)/size, (r+1)/size
+
+		if newRow > r/size && (c+1)/size > c/size {
 			return 0, 0, true
 		}
-		count++
-		return r+(count % 3), c + (count / 3), false
+
+		if newColumn == c/size {
+			return r, c+1, false
+		} else {
+			return r+1, 0, false
+		}
 	})
 }
