@@ -89,7 +89,7 @@ func TestIsValidBlock(t *testing.T) {
 
 	// test valid block
 	for r := 0; r < 9; r++ {
-		for  c := 0; c < 9; c++ {
+		for c := 0; c < 9; c++ {
 			ok = IsValidBlock(sudoku, r, c)
 			if !ok {
 				t.Fatalf("failure detected with row %d, column %d", r, c)

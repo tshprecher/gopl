@@ -11,11 +11,11 @@ func solveDFS(sudoku *common.Sudoku, curFieldNum int) bool {
 	dim := int(sudoku.Size) * int(sudoku.Size)
 
 	// no more fields to satisfy means problem is solved
-	if curFieldNum == dim * dim {
+	if curFieldNum == dim*dim {
 		return true
 	}
 
-	curFieldRow, curFieldCol := curFieldNum / dim, curFieldNum % dim
+	curFieldRow, curFieldCol := curFieldNum/dim, curFieldNum%dim
 
 	// if the field is already filled, move on to the next field
 	if sudoku.Values[curFieldRow][curFieldCol] != common.EmptyField {

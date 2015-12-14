@@ -1,7 +1,6 @@
 // example puzzles
 package examples
 
-
 // completed puzzle
 var ex1 [9][9]int = [9][9]int{
 	{1, 2, 3, 4, 5, 6, 7, 8, 9},
@@ -13,7 +12,6 @@ var ex1 [9][9]int = [9][9]int{
 	{3, 4, 5, 6, 7, 8, 9, 1, 2},
 	{6, 7, 8, 9, 1, 2, 3, 4, 5},
 	{9, 1, 2, 3, 4, 5, 6, 7, 8}}
-
 
 // easy puzzle 4,859,614,836 from websudoku.com
 var ex2 [9][9]int = [9][9]int{
@@ -31,10 +29,9 @@ var ex2 [9][9]int = [9][9]int{
 var Ex1 [][]int = toSlice(ex1)
 var Ex2 [][]int = toSlice(ex2)
 
-
 func toSlice(ex [9][9]int) [][]int {
 	sl := make([][]int, 9)
-	for i, _ := range(ex) {
+	for i, _ := range ex {
 		sl[i] = ex[i][:]
 	}
 	return sl

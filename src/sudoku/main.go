@@ -22,7 +22,6 @@ func printSudoku(sudoku *common.Sudoku) {
 				fmt.Printf("%d", sudoku.Values[r][c])
 			}
 
-
 			if c < dim-1 {
 				fmt.Printf(" ")
 			}

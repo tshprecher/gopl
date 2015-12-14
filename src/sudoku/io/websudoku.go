@@ -4,8 +4,8 @@ import (
 	"golang.org/x/net/html"
 	"net/http"
 	"net/url"
-	"sudoku/common"
 	"strconv"
+	"sudoku/common"
 )
 
 const (
@@ -28,7 +28,6 @@ func scrapeCheatAndEditMask(node *html.Node) (*string, *string) {
 			editMask = &node.Attr[2].Val
 		}
 	}
-
 
 	for c := node.FirstChild; c != nil; c = c.NextSibling {
 		c, e := scrapeCheatAndEditMask(c)
@@ -72,7 +71,7 @@ func FetchWebSudoku(level, id int) *common.Sudoku {
 	sudoku := common.NewSudoku(3)
 	for i := 0; i < 81; i++ {
 		if (*editMask)[i] == '0' {
-			sudoku.Values[i / 9][i % 9] = int((*cheat)[i]) - int('0')
+			sudoku.Values[i/9][i%9] = int((*cheat)[i]) - int('0')
 		}
 	}
 
