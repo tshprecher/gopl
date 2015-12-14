@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"sudoku/examples"
+	"os"
+	"strconv"
 	"sudoku/common"
 	"sudoku/compute"
+	"sudoku/io"
 )
 
 func printSudoku(sudoku *common.Sudoku) {
@@ -30,7 +32,16 @@ func printSudoku(sudoku *common.Sudoku) {
 }
 
 func main() {
-	sudoku, _ := common.NewSudokuFromSlice(examples.Ex2, 3)
+	// TODO: safer argument validation
+	level, _ := strconv.Atoi(os.Args[1])
+	id, _ := strconv.Atoi(os.Args[2])
+
+	sudoku := io.FetchWebSudoku(level, id)
+
+	if sudoku == nil {
+		fmt.Println("problem not found")
+		os.Exit(1)
+	}
 
 	fmt.Println("solving the following problem:")
 	printSudoku(sudoku)

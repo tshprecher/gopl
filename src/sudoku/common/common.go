@@ -96,21 +96,20 @@ func IsValidColumn(sudoku *Sudoku, col int) bool {
 }
 
 func IsValidBlock(sudoku *Sudoku, row int, col int) bool {
-	startRow := row / int(sudoku.Size)
-	startCol := col / int(sudoku.Size)
+	size := int(sudoku.Size)
 
-	return validate(sudoku, startRow, startCol, func (r int, c int, s uint8) (int, int, bool) {
+	return validate(sudoku, row/size*size, col/size*size, func (r int, c int, s uint8) (int, int, bool) {
 		size := int(s)
-		newColumn, newRow := (c+1)/size, (r+1)/size
 
-		if newRow > r/size && newColumn > c/size {
-			return 0, 0, true
-		}
-
-		if newColumn == c/size {
+		if (c+1)/size == c/size {
 			return r, c+1, false
 		} else {
-			return r+1, 0, false
+			if (r+1)/size == r/size {
+				return r+1, c/size*size, false
+			} else {
+				return 0, 0, true
+
+			}
 		}
 	})
 }
