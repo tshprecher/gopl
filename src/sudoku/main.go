@@ -1,50 +1,37 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"strconv"
-	"sudoku/common"
 	"sudoku/compute"
 	"sudoku/io"
 )
 
-func printSudoku(sudoku *common.Sudoku) {
-	var size int = int(sudoku.Size)
-	var dim = size * size
+var stdoutWriter = io.NewWriter(os.Stdout)
 
-	for r := 0; r < dim; r++ {
-		for c := 0; c < dim; c++ {
-			val := sudoku.Values[r][c]
-			if val == 0 {
-				fmt.Printf(".")
-			} else {
-				fmt.Printf("%d", sudoku.Values[r][c])
-			}
-
-			if c < dim-1 {
-				fmt.Printf(" ")
-			}
-		}
-		fmt.Println()
-	}
+func exitError(message string) {
+	fmt.Println(fmt.Sprintf("error: %s", message))
+	os.Exit(1)
 }
 
-
-func main() {
-	// TODO: safer argument validation
-	level, _ := strconv.Atoi(os.Args[1])
-	id, _ := strconv.Atoi(os.Args[2])
+func handleSolve(level, id int) {
+	if level < 1 || level > 4 {
+		exitError("arg 'level' must exist and be 1, 2, 3, or 4.")
+	}
+	if id < 0 {
+		exitError("arg 'id' must exist and be positive.")
+	}
 
 	sudoku := io.FetchWebSudoku(level, id)
 
 	if sudoku == nil {
-		fmt.Println("problem not found")
-		os.Exit(1)
+		exitError("problem not found")
 	}
 
-	fmt.Println("solving the following problem:")
-	printSudoku(sudoku)
+	fmt.Println("unsolved:")
+	stdoutWriter.WriteSudoku(sudoku)
+
 	res := compute.SolveDFS(sudoku)
 
 	if res {
@@ -54,5 +41,21 @@ func main() {
 		fmt.Println("could not solve: ")
 	}
 
-	printSudoku(sudoku)
+	stdoutWriter.WriteSudoku(sudoku)
+}
+
+func main() {
+	download := flag.Bool("dl", false, "download sudoku(s)")
+
+	solveLevel := flag.Int("level", 0, "problem level (1, 2, 3, 4)")
+	solveId := flag.Int("id", -1, "problem id")
+
+	flag.Parse()
+
+	if *download {
+		// TODO: implement the download case
+		fmt.Println("error: download case not yet implemented")
+	} else {
+		handleSolve(*solveLevel, *solveId)
+	}
 }
