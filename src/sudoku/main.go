@@ -30,6 +30,7 @@ func printSudoku(sudoku *common.Sudoku) {
 	}
 }
 
+
 func main() {
 	// TODO: safer argument validation
 	level, _ := strconv.Atoi(os.Args[1])
