@@ -19,7 +19,7 @@ func NewWriter(writer io.Writer) *Writer {
 }
 
 func (w *Writer) WriteComment(message string) error {
-	comment := fmt.Sprintf("//%s", message)
+	comment := fmt.Sprintf("//%s\n", message)
 	_, err := w.writer.Write([]byte(comment))
 
 	return err

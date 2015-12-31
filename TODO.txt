@@ -1,1 +1,0 @@
-1) make a git hook to run gofmt automatically
