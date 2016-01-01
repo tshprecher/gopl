@@ -34,7 +34,7 @@ func writeWebSudoku(sudoku *common.Sudoku, level, id int) {
 	fmt.Println()
 }
 
-func handleSolve(level, id int) {
+func handleSolve(level, id int, par bool) {
 	puzzles := make([]common.Sudoku, 0, 10)
 	if level == 0 && id == -1 {
 		// read puzzles from stdin and solve
@@ -49,7 +49,12 @@ func handleSolve(level, id int) {
 		if sudoku != nil && err != nil {
 			exitError(fmt.Sprintf("%v", err))
 		}
-		compute.SolveSerial(compute.SolveDFS, puzzles, stdoutWriter)
+		if par {
+			compute.SolveParallel(compute.SolveDFS, puzzles, stdoutWriter, 4)
+		} else {
+			compute.SolveSerial(compute.SolveDFS, puzzles, stdoutWriter)
+		}
+
 	} else {
 		// solve single puzzle
 		if level < 1 || level > 4 {
@@ -99,12 +104,13 @@ func main() {
 	// for solving
 	level := flag.Int("level", 0, "solve puzzle of difficulty 'level' (1, 2, 3, or 4)")
 	id := flag.Int("id", -1, "solve puzzle with id 'id'")
+	par := flag.Bool("par", false, "solve puzzles in parallel")
 
 	flag.Parse()
 
 	if *dl {
 		handleDownload(*n)
 	} else {
-		handleSolve(*level, *id)
+		handleSolve(*level, *id, *par)
 	}
 }
