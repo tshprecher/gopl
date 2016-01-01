@@ -26,6 +26,8 @@ func NewReader(reader io.Reader) *Reader {
 
 func (r *Reader) Read() (*common.Sudoku, error) {
 	r.state.curSudoku = nil
+	r.state.curSudokuRow = 0
+
 	size, err := scanSize(&r.state)
 
 	if err != nil {
@@ -44,11 +46,10 @@ func (r *Reader) Read() (*common.Sudoku, error) {
 
 // TODO: fix the positioning since the position returned if after the field we just scanned?
 func readError(state *readState, message string) error {
-	return errors.New(fmt.Sprintf("%s @ line %d, column %d", message, state.scanner.Pos().Line, state.scanner.Pos().Column))
+	return errors.New(fmt.Sprintf("%s @ line %d, column %d.", message, state.scanner.Pos().Line, state.scanner.Pos().Column))
 }
 
 func scanSize(state *readState) (int, error) {
-
 	if err := scanString(state, "size"); err != nil {
 		return 0, err
 	}
@@ -98,26 +99,17 @@ func scanString(state *readState, s string) error {
 func scanField(state *readState) (int, error) {
 	// expect state.curSudoku != nil
 	tok := state.scanner.Scan();
-	text := state.scanner.TokenText()
-	fmt.Printf("scanned field token: '%v'\n", tok)
-	fmt.Printf("scanned field text: '%s'\n", text)
-	// TODO: remove
-	//       tok == int || (tok == char and text == ".")
-	// not:  tok != int && (tok != char || text != ".")
+
 	if tok != scanner.Int && tok != '.' {
 		return 0, readError(state, fmt.Sprintf("element not found"))
 	}
-
 	if tok == '.' {
-		// earlier check ensures text == "."
 		return common.EmptyField, nil
 	}
 
-	i, err := strconv.Atoi(text)
-
+	i, err := strconv.Atoi(state.scanner.TokenText())
 	if err != nil {
 		return 0, err
 	}
-
 	return i, nil
 }

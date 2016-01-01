@@ -35,26 +35,33 @@ func writeWebSudoku(sudoku *common.Sudoku, level, id int) {
 }
 
 func handleSolve(level, id int) {
-	if level < 1 || level > 4 {
-		exitError("arg 'level' must exist and be 1, 2, 3, or 4.")
-	}
-	if id < 0 {
-		exitError("arg 'id' must exist and be positive.")
-	}
+	puzzles := make([]common.Sudoku, 0, 10)
+	if level == 0 && id == -1 {
+		// read puzzles from stdin and solve
+		stdinReader := io.NewReader(os.Stdin)
+		sudoku, err := stdinReader.Read()
 
-	sudoku := fetchSudoku(level, id)
-	fmt.Println("unsolved:")
-	stdoutWriter.WriteSudoku(sudoku)
-
-	res := compute.SolveDFS(sudoku)
-	if res {
-		fmt.Println()
-		fmt.Println("solved:")
+		for sudoku != nil && err == nil {
+			puzzles = append(puzzles, *sudoku)
+			sudoku, err = stdinReader.Read()
+		}
+		// TODO: make this just gate on error?
+		if sudoku != nil && err != nil {
+			exitError(fmt.Sprintf("%v", err))
+		}
+		compute.SolveSerial(compute.SolveDFS, puzzles, stdoutWriter)
 	} else {
-		fmt.Println("could not solve: ")
+		// solve single puzzle
+		if level < 1 || level > 4 {
+			exitError("arg 'level' must exist and be 1, 2, 3, or 4.")
+		}
+		if id < 0 {
+			exitError("arg 'id' must exist and be positive.")
+		}
+		sudoku := fetchSudoku(level, id)
+		puzzle := []common.Sudoku{*sudoku}
+		compute.SolveSerial(compute.SolveDFS, puzzle, stdoutWriter)
 	}
-
-	stdoutWriter.WriteSudoku(sudoku)
 }
 
 func handleDownload(n int) {
