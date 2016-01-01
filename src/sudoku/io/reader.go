@@ -53,7 +53,7 @@ func scanSize(state *readState) (int, error) {
 	if err := scanString(state, "size"); err != nil {
 		return 0, err
 	}
-	size, err := scanField(state);
+	size, err := scanField(state)
 
 	if err != nil {
 		return 0, err
@@ -82,7 +82,6 @@ func scanRow(state *readState) error {
 	return nil
 }
 
-
 func scanString(state *readState, s string) error {
 	// expect state.curSudoku != nil
 	if tok := state.scanner.Scan(); tok != scanner.Ident {
@@ -98,7 +97,7 @@ func scanString(state *readState, s string) error {
 
 func scanField(state *readState) (int, error) {
 	// expect state.curSudoku != nil
-	tok := state.scanner.Scan();
+	tok := state.scanner.Scan()
 
 	if tok != scanner.Int && tok != '.' {
 		return 0, readError(state, fmt.Sprintf("element not found"))

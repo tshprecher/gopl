@@ -4,8 +4,8 @@ package io
 
 import (
 	"errors"
-	"io"
 	"fmt"
+	"io"
 	"strconv"
 	"sudoku/common"
 )

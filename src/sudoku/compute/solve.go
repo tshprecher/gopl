@@ -7,7 +7,7 @@ import (
 )
 
 type result struct {
-	sudoku *common.Sudoku
+	sudoku  *common.Sudoku
 	success bool
 }
 
@@ -27,7 +27,7 @@ func writeResults(writer *io.Writer, results []result) {
 func SolveSerial(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writer *io.Writer) {
 	results := make([]result, len(puzzles))
 
-	for p := range(puzzles) {
+	for p := range puzzles {
 		res := algo(&puzzles[p])
 		results[p] = result{&puzzles[p], res}
 	}
@@ -39,7 +39,7 @@ func SolveParallel(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writ
 	var wg sync.WaitGroup
 
 	type message struct {
-		index int
+		index  int
 		sudoku *common.Sudoku
 	}
 
@@ -48,7 +48,7 @@ func SolveParallel(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writ
 
 	for c := concurrencyLevel; c > 0; c-- {
 		wg.Add(1)
-		go func () {
+		go func() {
 			defer wg.Done()
 			for m := range ch {
 				res := algo(m.sudoku)
@@ -58,7 +58,7 @@ func SolveParallel(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writ
 	}
 
 	for p := range puzzles {
-		ch<-message{p, &puzzles[p]}
+		ch <- message{p, &puzzles[p]}
 	}
 
 	close(ch)

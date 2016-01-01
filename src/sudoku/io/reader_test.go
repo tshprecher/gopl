@@ -7,7 +7,7 @@ import (
 
 func TestReadSingle(t *testing.T) {
 	var tests = []struct {
-		input string
+		input  string
 		expect bool
 	}{
 		{"size 2 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4", true},

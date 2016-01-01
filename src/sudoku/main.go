@@ -74,7 +74,7 @@ func handleDownload(n int) {
 		// read identifiers from stdin
 		// NOTE: not concurrent => slower than it should be
 		var level, id int
-		read, err := fmt.Scanln(&level, &id);
+		read, err := fmt.Scanln(&level, &id)
 
 		for read > 0 && err == nil {
 			sudoku := fetchSudoku(level, id)
