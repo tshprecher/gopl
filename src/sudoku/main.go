@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"sudoku/common"
@@ -13,15 +14,10 @@ import (
 
 var stdoutWriter = io.NewWriter(os.Stdout)
 
-func exitError(message string) {
-	fmt.Println(fmt.Sprintf("error: %s", message))
-	os.Exit(1)
-}
-
 func fetchSudoku(level, id int) *common.Sudoku {
 	sudoku := io.FetchWebSudoku(level, id)
 	if sudoku == nil {
-		exitError("unexpected error fetching puzzle.")
+		log.Fatal("unexpected error fetching puzzle.")
 	}
 	return sudoku
 }
@@ -45,9 +41,8 @@ func handleSolve(level, id int, par bool) {
 			puzzles = append(puzzles, *sudoku)
 			sudoku, err = stdinReader.Read()
 		}
-		// TODO: make this just gate on error?
-		if sudoku != nil && err != nil {
-			exitError(fmt.Sprintf("%v", err))
+		if err != nil {
+			log.Fatalf("%v", err)
 		}
 		if par {
 			compute.SolveParallel(compute.SolveDFS, puzzles, stdoutWriter, 4)
@@ -58,10 +53,10 @@ func handleSolve(level, id int, par bool) {
 	} else {
 		// solve single puzzle
 		if level < 1 || level > 4 {
-			exitError("arg 'level' must exist and be 1, 2, 3, or 4.")
+			log.Fatal("arg 'level' must exist and be 1, 2, 3, or 4.")
 		}
 		if id < 0 {
-			exitError("arg 'id' must exist and be positive.")
+			log.Fatal("arg 'id' must exist and be positive.")
 		}
 		sudoku := fetchSudoku(level, id)
 		puzzle := []common.Sudoku{*sudoku}
@@ -84,7 +79,7 @@ func handleDownload(n int) {
 	} else {
 		// download random identifiers
 		if n < 0 {
-			exitError("arg 'n' must be positive.")
+			log.Fatal("arg 'n' must be positive.")
 		}
 		for i := 0; i < n; i++ {
 			level := rand.Intn(4) + 1

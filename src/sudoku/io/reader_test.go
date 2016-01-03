@@ -2,71 +2,90 @@ package io
 
 import (
 	"bytes"
+	"sudoku/common"
 	"testing"
 )
 
 func TestReadSingle(t *testing.T) {
-	var tests = []struct {
-		input  string
-		expect bool
-	}{
-		{"size 2 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4", true},
-		{"size 2 . . . . 1 2 3 4 . . . . 1 2 3 4", true},
-		{"size 2 1 2 3 4", false},
-		{"size", false},
-		{"size 1 1", true},
-		{"size 1 .", true},
-		{"size 1\n\n 1", true},
-		{"size 1 /* block comment */ 1", true},
-		{"size 1 \n// line comment\n1", true},
+	reader := NewReader(bytes.NewBufferString("size 2 1 2 3 4 . . . . 1 2 3 4 . . . ."))
+	sud, _ := reader.Read()
+
+	if sud == nil || sud.Size != 2 {
+		t.Errorf("expected sudoku with size = 2, received %v", sud)
 	}
 
-	for _, test := range tests {
-		reader := NewReader(bytes.NewBufferString(test.input))
-		sud, err := reader.Read()
-		if err != nil {
-			if sud != nil {
-				t.Errorf("unexpected sudoku value for input '%v'.", test.input)
+	for r := 0; r < 4; r++ {
+		for c := 0; c < 4; c++ {
+			if r % 2 == 0 && sud.Values[r][c] != c+1 {
+				t.Errorf("expected value %d, received value %d", c+1, sud.Values[r][c])
 			}
-			if test.expect == true {
-				t.Errorf("expected true, received err for input '%s': '%v'.", test.input, err)
-			}
-		} else {
-			if sud == nil {
-				t.Errorf("expected nil sudoku value for test '%v'.", test.input)
-			}
-			if test.expect == false {
-				t.Errorf("expected false, received true for test '%v'.", test.input)
+			if r % 2 == 1 && sud.Values[r][c] != common.EmptyField {
+				t.Errorf("expected value %d, received value %d", common.EmptyField, sud.Values[r][c])
 			}
 		}
 	}
 }
 
 func TestReadMultiple(t *testing.T) {
-	success := "size 1 . size 1 1"
-	reader := NewReader(bytes.NewBufferString(success))
-
-	sud1, err1 := reader.Read()
-	sud2, err2 := reader.Read()
-	sud3, _ := reader.Read()
-
-	if err1 != nil || err2 != nil {
-		t.Errorf("unexpected error returned when reading multiple values.")
+	var tests = []struct {
+		input  string
+		expect []bool // true => returns a sudoku
+	}{
+		{"size 2 1 2 3 4 1 2 3 4 1 2 3 4 1 2 3 4", []bool{true, false}},
+		{"size 2 . . . . 1 2 3 4 . . . . 1 2 3 4", []bool{true, false}},
+		{"size 2 1 2 3 4", []bool{false}},
+		{"size 1 1 2 3 4", []bool{true, false}},
+		{"size", []bool{false}},
+		{"size 1 A", []bool{false}},
+		{"size 1 1", []bool{true, false}},
+		{"size 1 .", []bool{true, false}},
+		{"size 1\n\n 1", []bool{true}},
+		{"size 1 /* block comment */ 1", []bool{true, false}},
+		{"size 1 \n// line comment\n1", []bool{true, false}},
 	}
-	if sud1 == nil || sud2 == nil {
-		t.Errorf("unexpected nil returned when reading multiple values.")
-	}
-	if sud3 != nil {
-		t.Errorf("unexpected puzzle returned when done reading multiple values.")
-	}
 
-	fail := "size 1 . size 2 1"
-	reader = NewReader(bytes.NewBufferString(fail))
+	for _, test := range tests {
+		reader := NewReader(bytes.NewBufferString(test.input))
+		for _, expect := range test.expect {
+			sud, err := reader.Read()
+			if err != nil {
+				if sud != nil {
+					t.Errorf("unexpected sudoku value along with err for input '%v'.", test.input)
+				}
+				if expect == true {
+					t.Errorf("expected sudoku, received err for input '%s': '%v'.", test.input, err)
+				}
+			} else {
+				if sud == nil && expect == true {
+					t.Errorf("received EOF for test '%v'.", test.input)
+				}
+				if sud != nil && expect == false {
+					t.Errorf("expected err, received sudoku for test '%v'.", test.input)
+				}
+			}
+		}
+	}
+}
 
+func TestTerminalError(t *testing.T) {
+	reader := NewReader(bytes.NewBufferString("size 1 A"))
+	_, err := reader.Read()
+	_, err2 := reader.Read()
+
+	if err == nil || err != err2 {
+		t.Errorf("expected err == err2, received err = '%v', err2 = '%v'.", err, err2)
+	}
+}
+
+func TestTerminalOk(t *testing.T) {
+	reader := NewReader(bytes.NewBufferString("size 1 1"))
+	// read the initial puzzle
 	reader.Read()
-	sud2, err2 = reader.Read()
+	// should return nil, nil both times
+	sud, err := reader.Read()
+	sud2, err2 := reader.Read()
 
-	if err2 == nil {
-		t.Errorf("expected an error when reading second puzzle for input '%v'.", fail)
+	if sud != nil || err != nil || sud2 != nil || err2 != nil {
+		t.Errorf("expected sud == err == sud2 == err2 == nil")
 	}
 }

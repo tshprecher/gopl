@@ -113,7 +113,6 @@ func IsValidBlock(sudoku *Sudoku, row int, col int) bool {
 }
 
 func IsValid(sudoku *Sudoku) bool {
-	// TODO: add method to Sudoku to compute the dim
 	dim := int(sudoku.Size) * int(sudoku.Size)
 
 	for d := 0; d < dim; d++ {

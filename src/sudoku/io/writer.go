@@ -1,5 +1,3 @@
-// TODO: add tests
-
 package io
 
 import (
@@ -31,10 +29,10 @@ func (w *Writer) WriteSudoku(sudoku *common.Sudoku) error {
 	}
 
 	w.writer.Write([]byte(fmt.Sprintf("size %d\n", sudoku.Size)))
+	toWrite := make([]byte, 0, 8)
 	for _, row := range sudoku.Values {
 		for i, v := range row {
-			// TODO: create once, resize as necessary?
-			toWrite := make([]byte, 0, 8)
+			toWrite = toWrite[0:0]
 
 			if v == common.EmptyField {
 				toWrite = append(toWrite, '.')

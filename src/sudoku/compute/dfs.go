@@ -1,6 +1,3 @@
-/**
- * TODO: description, comments e'erywhere
- */
 package compute
 
 import (

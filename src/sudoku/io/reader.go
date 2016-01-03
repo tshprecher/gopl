@@ -9,106 +9,124 @@ import (
 	"text/scanner"
 )
 
-type readState struct {
+type Reader struct {
+	// parsing state
 	scanner      *scanner.Scanner
 	curSudoku    *common.Sudoku
 	curSudokuRow int
-}
 
-type Reader struct {
-	state readState
+	// terminal flags
+	termErr error
+	termOk bool
 }
 
 func NewReader(reader io.Reader) *Reader {
-	state := readState{scanner: new(scanner.Scanner).Init(reader)}
-	return &Reader{state}
+	return &Reader{scanner: new(scanner.Scanner).Init(reader)}
 }
 
 func (r *Reader) Read() (*common.Sudoku, error) {
-	r.state.curSudoku = nil
-	r.state.curSudokuRow = 0
+	// once a terminal state is reached, subsequent calls return the terminal state
+	if r.termOk {
+		return nil, nil
+	}
+	if r.termErr != nil {
+		return nil, r.termErr
+	}
 
-	size, err := scanSize(&r.state)
+	// attempt to read the next puzzle
+	r.curSudoku = nil
+	r.curSudokuRow = 0
 
+	eof, size, err := r.scanSize()
+	if eof {
+		r.termOk = true
+		return nil, nil
+	}
 	if err != nil {
+		r.termErr = err
 		return nil, err
 	}
 
-	r.state.curSudoku = common.NewSudoku(uint8(size))
-	for s := r.state.curSudoku.Size * r.state.curSudoku.Size; s > 0; s-- {
-		if err := scanRow(&r.state); err != nil {
+	r.curSudoku = common.NewSudoku(uint8(size))
+	for s := r.curSudoku.Size * r.curSudoku.Size; s > 0; s-- {
+		eof, err := r.scanRow()
+		if eof {
+			r.termOk = true
+			return nil, nil
+		}
+		if err != nil {
+			r.termErr = err
 			return nil, err
 		}
 	}
-
-	return r.state.curSudoku, nil
+	return r.curSudoku, nil
 }
 
-// TODO: fix the positioning since the position returned if after the field we just scanned?
-func readError(state *readState, message string) error {
-	return errors.New(fmt.Sprintf("%s @ line %d, column %d.", message, state.scanner.Pos().Line, state.scanner.Pos().Column))
+func (r *Reader) readError(message string) error {
+	ln, col := r.scanner.Pos().Line, r.scanner.Pos().Column
+	return errors.New(fmt.Sprintf("%s @ line %d, column %d.", message, ln, col))
 }
 
-func scanSize(state *readState) (int, error) {
-	if err := scanString(state, "size"); err != nil {
-		return 0, err
+func (r *Reader) scanSize() (eof bool, size int, err error) {
+	eof, err = r.scanString("size")
+	if eof {
+		return true, 0, nil
 	}
-	size, err := scanField(state)
-
 	if err != nil {
-		return 0, err
-
+		return false, 0, err
 	}
-
-	return size, nil
+	return r.scanField()
 }
 
-func scanRow(state *readState) error {
-	// expect state.curSudoku != nil
-	for e, len := 0, int(state.curSudoku.Size)*int(state.curSudoku.Size); e < len; e++ {
-		{
-			val, err := scanField(state)
-			if err != nil {
-				return err
-			}
-
-			if val != common.EmptyField && (val < 1 || val > len) {
-				return readError(state, fmt.Sprintf("invalid value %d", val))
-			}
-			state.curSudoku.Values[state.curSudokuRow][e] = val
+func (r *Reader) scanRow() (eof bool, err error) {
+	// expect r.curSudoku != nil
+	for e, len := 0, int(r.curSudoku.Size)*int(r.curSudoku.Size); e < len; e++ {
+		var val int
+		eof, val, err = r.scanField()
+		if eof {
+			return true, nil
 		}
+		if err != nil {
+			return false, err
+		}
+
+		if val != common.EmptyField && (val < 1 || val > len) {
+			return false, r.readError(fmt.Sprintf("invalid value %d", val))
+		}
+		r.curSudoku.Values[r.curSudokuRow][e] = val
 	}
-	state.curSudokuRow++
-	return nil
+	r.curSudokuRow++
+	return false, nil
 }
 
-func scanString(state *readState, s string) error {
-	// expect state.curSudoku != nil
-	if tok := state.scanner.Scan(); tok != scanner.Ident {
-		return readError(state, "unexpected error")
+func (r *Reader) scanString(s string) (eof bool, err error) {
+	// expect r.curSudoku != nil
+	tok := r.scanner.Scan()
+	if tok == scanner.EOF {
+		return true, nil
 	}
-
-	if tokenText := state.scanner.TokenText(); tokenText != s {
-		return readError(state, fmt.Sprintf("unexpected identifier '%s'", tokenText))
+	if tokenText := r.scanner.TokenText(); tok != scanner.Ident || tokenText != s {
+		return false, r.readError(fmt.Sprintf("unexpected identifier '%s'", tokenText))
 	}
-
-	return nil
+	return false, nil
 }
 
-func scanField(state *readState) (int, error) {
-	// expect state.curSudoku != nil
-	tok := state.scanner.Scan()
-
+func (r *Reader) scanField() (eof bool, field int, err error) {
+	// expect r.curSudoku != nil
+	tok := r.scanner.Scan()
+	if tok == scanner.EOF {
+		return true, 0, nil
+	}
 	if tok != scanner.Int && tok != '.' {
-		return 0, readError(state, fmt.Sprintf("element not found"))
+		return false, 0, r.readError(fmt.Sprintf("element not found"))
 	}
 	if tok == '.' {
-		return common.EmptyField, nil
+		return false, common.EmptyField, nil
 	}
 
-	i, err := strconv.Atoi(state.scanner.TokenText())
+	i, err := strconv.Atoi(r.scanner.TokenText())
 	if err != nil {
-		return 0, err
+		return false, 0, err
 	}
-	return i, nil
+	return false, i, nil
 }
