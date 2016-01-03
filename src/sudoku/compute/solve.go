@@ -1,3 +1,4 @@
+// Package compute contains logic for solving puzzles.
 package compute
 
 import (
@@ -24,6 +25,9 @@ func writeResults(writer *io.Writer, results []result) {
 	}
 }
 
+// SolveSerial solves a collection of puzzles serially
+// given a solver algorithm and a Writer to output results.
+// Output is written after all results are computed.
 func SolveSerial(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writer *io.Writer) {
 	results := make([]result, len(puzzles))
 
@@ -35,6 +39,9 @@ func SolveSerial(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writer
 	writeResults(writer, results)
 }
 
+// SolveParallel solves a collection of puzzles in parallel
+// given a solver algorithm and a Writer to output results.
+// Output is written after all results are computed.
 func SolveParallel(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writer *io.Writer, concurrencyLevel uint8) {
 	var wg sync.WaitGroup
 

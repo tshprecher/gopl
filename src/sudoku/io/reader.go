@@ -1,3 +1,5 @@
+// Package io implements logic for downloading puzzles from
+// websudoku.com and writing/reading puzzles to/from files.
 package io
 
 import (
@@ -9,6 +11,8 @@ import (
 	"text/scanner"
 )
 
+// A Reader deserializes an arbitrary number of puzzles
+// from an input stream.
 type Reader struct {
 	// parsing state
 	scanner      *scanner.Scanner
@@ -20,11 +24,17 @@ type Reader struct {
 	termOk bool
 }
 
+// NewReader creates a new Reader given an input stream.
 func NewReader(reader io.Reader) *Reader {
 	return &Reader{scanner: new(scanner.Scanner).Init(reader)}
 }
 
-func (r *Reader) Read() (*common.Sudoku, error) {
+// Next deserializes and returns the next puzzle in the stream.
+// On success, a Sudoku is returned without an error. On failure,
+// an error is returned without a Sudoku and all subsequent calls
+// return the same error. If the Reader has reached the end of the
+// stream, Next returns nil, nil.
+func (r *Reader) Next() (*common.Sudoku, error) {
 	// once a terminal state is reached, subsequent calls return the terminal state
 	if r.termOk {
 		return nil, nil

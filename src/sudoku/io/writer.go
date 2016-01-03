@@ -8,14 +8,18 @@ import (
 	"sudoku/common"
 )
 
+// A Writer serializes Sudokus to an output stream.
 type Writer struct {
 	writer io.Writer
 }
 
+// NewWriter creates a new Writer given an output stream.
 func NewWriter(writer io.Writer) *Writer {
 	return &Writer{writer}
 }
 
+// WriteComment writes a comment to the output stream.
+// All comments are ignored by Readers.
 func (w *Writer) WriteComment(message string) error {
 	comment := fmt.Sprintf("//%s\n", message)
 	_, err := w.writer.Write([]byte(comment))
@@ -23,6 +27,8 @@ func (w *Writer) WriteComment(message string) error {
 	return err
 }
 
+// WriteSudoku writes a Sudoku to the output stream that's
+// able to be read by Readers.
 func (w *Writer) WriteSudoku(sudoku *common.Sudoku) error {
 	if sudoku == nil {
 		return errors.New("cannot write nil sudoku.")

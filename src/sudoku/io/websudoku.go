@@ -43,6 +43,8 @@ func scrapeCheatAndEditMask(node *html.Node) (*string, *string) {
 	return cheat, editMask
 }
 
+// FetchWebSudoku scrapes a sudoku puzzle from websudoku.com.
+// A Sudoku is returned on success, nil otherwise.
 func FetchWebSudoku(level, id int) *common.Sudoku {
 	resp, err := http.PostForm(webSudokuEndpoint,
 		url.Values{"level": {strconv.Itoa(level)}, "set_id": {strconv.Itoa(id)}})

@@ -6,9 +6,9 @@ import (
 	"testing"
 )
 
-func TestReadSingle(t *testing.T) {
+func TestNextSingle(t *testing.T) {
 	reader := NewReader(bytes.NewBufferString("size 2 1 2 3 4 . . . . 1 2 3 4 . . . ."))
-	sud, _ := reader.Read()
+	sud, _ := reader.Next()
 
 	if sud == nil || sud.Size != 2 {
 		t.Errorf("expected sudoku with size = 2, received %v", sud)
@@ -26,7 +26,7 @@ func TestReadSingle(t *testing.T) {
 	}
 }
 
-func TestReadMultiple(t *testing.T) {
+func TestNextMultiple(t *testing.T) {
 	var tests = []struct {
 		input  string
 		expect []bool // true => returns a sudoku
@@ -47,7 +47,7 @@ func TestReadMultiple(t *testing.T) {
 	for _, test := range tests {
 		reader := NewReader(bytes.NewBufferString(test.input))
 		for _, expect := range test.expect {
-			sud, err := reader.Read()
+			sud, err := reader.Next()
 			if err != nil {
 				if sud != nil {
 					t.Errorf("unexpected sudoku value along with err for input '%v'.", test.input)
@@ -69,8 +69,8 @@ func TestReadMultiple(t *testing.T) {
 
 func TestTerminalError(t *testing.T) {
 	reader := NewReader(bytes.NewBufferString("size 1 A"))
-	_, err := reader.Read()
-	_, err2 := reader.Read()
+	_, err := reader.Next()
+	_, err2 := reader.Next()
 
 	if err == nil || err != err2 {
 		t.Errorf("expected err == err2, received err = '%v', err2 = '%v'.", err, err2)
@@ -80,10 +80,10 @@ func TestTerminalError(t *testing.T) {
 func TestTerminalOk(t *testing.T) {
 	reader := NewReader(bytes.NewBufferString("size 1 1"))
 	// read the initial puzzle
-	reader.Read()
+	reader.Next()
 	// should return nil, nil both times
-	sud, err := reader.Read()
-	sud2, err2 := reader.Read()
+	sud, err := reader.Next()
+	sud2, err2 := reader.Next()
 
 	if sud != nil || err != nil || sud2 != nil || err2 != nil {
 		t.Errorf("expected sud == err == sud2 == err2 == nil")

@@ -36,11 +36,11 @@ func handleSolve(level, id int, par bool) {
 	if level == 0 && id == -1 {
 		// read puzzles from stdin and solve
 		stdinReader := io.NewReader(os.Stdin)
-		sudoku, err := stdinReader.Read()
+		sudoku, err := stdinReader.Next()
 
 		for sudoku != nil && err == nil {
 			puzzles = append(puzzles, *sudoku)
-			sudoku, err = stdinReader.Read()
+			sudoku, err = stdinReader.Next()
 		}
 		if err != nil {
 			log.Fatalf("%v", err)

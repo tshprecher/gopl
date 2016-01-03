@@ -43,6 +43,9 @@ func solveDFS(sudoku *common.Sudoku, curFieldNum int) bool {
 	return false
 }
 
+// SolveDFS attempts to solve a puzzle via recursive dfs. On success,
+// it returns true with the correct values set. On failure, it returns
+// false and leaves the puzzle unmodified.
 func SolveDFS(sudoku *common.Sudoku) bool {
 	ok := common.IsValid(sudoku)
 

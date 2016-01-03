@@ -1,16 +1,17 @@
+// Package common contains logic for creating and validating puzzles.
 package common
 
 const EmptyField = 0
 
-/*
-  represent the general sudoku puzzle state
-  where size == 3 => standard sudoku 9x9.
-*/
+// A Sudoku represents a square sudoku puzzle of
+// arbitrary size. A standard 9x9 sudoku has size == 3.
 type Sudoku struct {
 	Size   uint8
 	Values [][]int
 }
 
+// NewSudoku creates a new Sudoku with a given size.
+// The size is the sqrt of the length of one row.
 func NewSudoku(size uint8) *Sudoku {
 	dim := int(size) * int(size)
 	values := make([][]int, dim)
@@ -22,7 +23,10 @@ func NewSudoku(size uint8) *Sudoku {
 	return &Sudoku{size, values}
 }
 
-func NewSudokuFromSlice(values [][]int, size uint8) (*Sudoku, bool) {
+// NewSudokuFromSlice creates a new Sudoku given a two
+// dimensional slice of record values and a size. On an error,
+// ok == false and no puzzle is created.
+func NewSudokuFromSlice(values [][]int, size uint8) (sudoku *Sudoku, ok bool) {
 	dim := int(size) * int(size)
 
 	// verify dimensions of input and range of the values
@@ -75,6 +79,8 @@ func validate(sudoku *Sudoku, startRow int, startCol int, next func(row int, col
 	return true
 }
 
+// IsValidRow returns true if a row's values
+// do not violate the sudoku property.
 func IsValidRow(sudoku *Sudoku, row int) bool {
 	return validate(sudoku, row, 0, func(r int, c int, s uint8) (int, int, bool) {
 		if c+1 >= int(s)*int(s) {
@@ -84,6 +90,8 @@ func IsValidRow(sudoku *Sudoku, row int) bool {
 	})
 }
 
+// IsValidColumn returns true if a column's values
+// do not violate the sudoku property.
 func IsValidColumn(sudoku *Sudoku, col int) bool {
 	return validate(sudoku, 0, col, func(r int, c int, s uint8) (int, int, bool) {
 		if r+1 >= int(s)*int(s) {
@@ -93,6 +101,9 @@ func IsValidColumn(sudoku *Sudoku, col int) bool {
 	})
 }
 
+// IsValidBlock returns true if a block's values do not
+// violate the sudoku property. The block is determined
+// from the row and column indices.
 func IsValidBlock(sudoku *Sudoku, row int, col int) bool {
 	size := int(sudoku.Size)
 
@@ -112,6 +123,7 @@ func IsValidBlock(sudoku *Sudoku, row int, col int) bool {
 	})
 }
 
+// IsValid returns true if a Sudoku does not validate the sudoku properties.
 func IsValid(sudoku *Sudoku) bool {
 	dim := int(sudoku.Size) * int(sudoku.Size)
 
