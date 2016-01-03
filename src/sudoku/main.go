@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"sudoku/common"
 	"sudoku/compute"
 	"sudoku/io"
@@ -92,6 +93,7 @@ func handleDownload(n int) {
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	// for downloading
 	dl := flag.Bool("dl", false, "download sudokus")
 	n := flag.Int("n", 0, "download 'n' number of random puzzles")
