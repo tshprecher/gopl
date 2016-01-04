@@ -5,9 +5,9 @@ package io
 import (
 	"errors"
 	"fmt"
+	"github.com/tshprecher/gopl/sudoku/common"
 	"io"
 	"strconv"
-	"sudoku/common"
 	"text/scanner"
 )
 

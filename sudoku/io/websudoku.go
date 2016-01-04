@@ -1,11 +1,11 @@
 package io
 
 import (
+	"github.com/tshprecher/gopl/sudoku/common"
 	"golang.org/x/net/html"
 	"net/http"
 	"net/url"
 	"strconv"
-	"sudoku/common"
 )
 
 const (

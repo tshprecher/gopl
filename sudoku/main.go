@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/tshprecher/gopl/sudoku/common"
+	"github.com/tshprecher/gopl/sudoku/compute"
+	"github.com/tshprecher/gopl/sudoku/io"
 	"log"
 	"math/rand"
 	"os"
 	"runtime"
-	"sudoku/common"
-	"sudoku/compute"
-	"sudoku/io"
 	"time"
 )
 

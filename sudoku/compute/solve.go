@@ -2,8 +2,8 @@
 package compute
 
 import (
-	"sudoku/common"
-	"sudoku/io"
+	"github.com/tshprecher/gopl/sudoku/common"
+	"github.com/tshprecher/gopl/sudoku/io"
 	"sync"
 )
 

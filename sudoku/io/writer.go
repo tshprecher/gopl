@@ -3,9 +3,9 @@ package io
 import (
 	"errors"
 	"fmt"
+	"github.com/tshprecher/gopl/sudoku/common"
 	"io"
 	"strconv"
-	"sudoku/common"
 )
 
 // A Writer serializes Sudokus to an output stream.

@@ -2,7 +2,7 @@ package io
 
 import (
 	"bytes"
-	"sudoku/common"
+	"github.com/tshprecher/gopl/sudoku/common"
 	"testing"
 )
 

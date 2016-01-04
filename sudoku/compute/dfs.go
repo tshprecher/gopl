@@ -1,7 +1,7 @@
 package compute
 
 import (
-	"sudoku/common"
+	"github.com/tshprecher/gopl/sudoku/common"
 )
 
 func solveDFS(sudoku *common.Sudoku, curFieldNum int) bool {
