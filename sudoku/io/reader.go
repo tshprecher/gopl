@@ -21,7 +21,7 @@ type Reader struct {
 
 	// terminal flags
 	termErr error
-	termOk bool
+	termOk  bool
 }
 
 // NewReader creates a new Reader given an input stream.

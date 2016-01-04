@@ -59,7 +59,7 @@ func SolveParallel(algo func(*common.Sudoku) bool, puzzles []common.Sudoku, writ
 			defer wg.Done()
 			for m := range ch {
 				res := algo(m.sudoku)
-				 // TODO: synchronization necessary here for many CPUs?
+				// TODO: synchronization necessary here for many CPUs?
 				results[m.index] = result{m.sudoku, res}
 			}
 		}()

@@ -16,10 +16,10 @@ func TestNextSingle(t *testing.T) {
 
 	for r := 0; r < 4; r++ {
 		for c := 0; c < 4; c++ {
-			if r % 2 == 0 && sud.Values[r][c] != c+1 {
+			if r%2 == 0 && sud.Values[r][c] != c+1 {
 				t.Errorf("expected value %d, received value %d", c+1, sud.Values[r][c])
 			}
-			if r % 2 == 1 && sud.Values[r][c] != common.EmptyField {
+			if r%2 == 1 && sud.Values[r][c] != common.EmptyField {
 				t.Errorf("expected value %d, received value %d", common.EmptyField, sud.Values[r][c])
 			}
 		}
