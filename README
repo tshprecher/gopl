@@ -1,5 +1,5 @@
 This repo intends to supplement my reading of "The Go Programming Language"
-by D&K. Rather than pausing at the end of every section and chapter to code
+by D&K. Instead of pausing at the end of every section and chapter to code
 up the exercises, I decided to write something small, if not particularly
 useful, to cover the salient features of the language.
 
