@@ -1,0 +1,39 @@
+This repo intends to supplement my reading of "The Go Programming Language"
+by D&K. Rather than pausing at the end of every section and chapter to code
+up the exercises, I decided to write something small, if not particularly
+useful, to cover the salient features of the language.
+
+The 'sudoku' project in this repo serves that purpose. At the end of chapter 5,
+I paused my reading to write the basic solver that fetches problems from
+websudoku.com. This covered many of the language's features, including:
+
+  - functions
+  - slices
+  - maps
+  - structs
+  - pointers
+  - deferred calls
+  - first class functions
+  - practice using "net/http" library
+  - practice using "golang.org/x/net/html" library for scraping puzzles
+  - practice using "testing" library (although not covered until a later chapter)
+
+I tried my best to use only what was covered up to chapter 5. The use of go's
+"testing" library is a notable exception. After I completed TGPL, I went back
+and added support for batch downloading/solving, parallel execution, godoc
+documentation, and proper command line parsing. Those changes covered the
+following:
+
+  - struct methods
+  - channels
+  - creating goroutines with the 'go' command
+  - practice using "flag" library for command line parsing
+  - practice using/reading "text/scanner" library for writing and reading puzzles
+  - practice using the error, io.{Reader, Writer} standard interfaces
+  - practice writing proper godoc documentation
+
+I tried my best to do things the "Go way" with proper error checking, etc. All
+code written with the sole purpose of understanding more about the Go programming
+language will be added to this repo.
+
+Now, on to more interesting (and useful) projects.

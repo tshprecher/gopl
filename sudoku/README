@@ -1,0 +1,34 @@
+This project downloads and solves an arbitrary number of sudoku
+puzzles. It was written purely for educational purposes. The
+binary can be generated with the standard "go get" command.
+
+The binary runs in two modes, downloading and solving.
+
+-- Downloading
+
+To download puzzles, pass in the '-dl' flag. All puzzles are
+downloaded from websudoku.com. Note: if you download too many,
+I heard they will block your IP. Don't complain to me if that
+happens.
+
+  -- downloads a single puzzle with level=1 and id=2
+  $ echo "1 1" | ./sudoku -dl > single_puzzle.out
+
+  -- downloads 10 random puzzles
+  $ ./sudoku -dl -n 10 > ten_random_puzzles.out
+
+-- Solving
+
+To solve puzzles, omit the '-dl' flag.
+
+  -- downloads and solves a puzzle with level=1 and id=2
+  $ ./sudoku -level 1 -id 2
+
+  -- reads puzzles from a file, solves serially
+  $ ./sudoku < ten_random_puzzles.out > ten_random_puzzles_solved_ser.out
+
+  -- reads puzzles from a file, solves in parallel. this should be at least 2x faster on multi-core cpus.
+  $ ./sudoku -par < ten_random_puzzles.out > ten_random_puzzles_solved_par.out
+
+That's it. Nothing too special. If you have any comments, questions,
+or bugs, email me at tshprecher@gmail.com
