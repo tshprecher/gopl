@@ -17,8 +17,8 @@ const (
 // A player represents an ATP tennis player.
 type player struct {
 	Name    string `json:"name"`
-	Rank    int    `json: "rank"`
-	Country string `json: "rank"`
+	Rank    int    `json:"rank"`
+	Country string `json:"country"`
 }
 
 // writeErrorResponse writes the error message to the reponse in a standard form.
