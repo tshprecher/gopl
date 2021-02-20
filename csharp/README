@@ -1,0 +1,29 @@
+This project downloads and solves an arbitrary number of sudoku
+puzzles. It was written purely to get more comfortable with C#.
+You will need the `dotnet` binary installed to run.
+
+There are two operations, fetching and solving.
+
+-- Downloading
+
+To download puzzles, pass in the '-dl' flag. All puzzles are
+downloaded from websudoku.com. Note: if you download too many,
+I heard they will block your IP.
+
+  -- downloads a single puzzle with level=1 and id=2
+  $ ./sudoku -dl -level 1 -id 2 > single_puzzle.out
+
+  -- downloads 10 random puzzles
+  $ ./sudoku -dl -n 10 > ten_random_puzzles.out
+
+-- Solving
+
+To solve puzzles, omit the '-dl' flag.
+
+  # downloads and solves a puzzle with level=1 and id=2
+  $ ./sudoku -level 1 -id 2
+
+  # reads puzzles from a file, solves serially
+  $ ./sudoku < ten_random_puzzles.out > ten_random_puzzles_solved_ser.out
+
+That's it. Nothing special.

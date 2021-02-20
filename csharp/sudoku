@@ -1,0 +1,2 @@
+#! /bin/sh 
+dotnet run /Users/tal/Workspace/sudoku/sudoku.csproj $@
